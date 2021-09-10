@@ -6,7 +6,7 @@ import { execute, subscribe } from "graphql";
 import { createServer } from "http";
 import { PubSub } from "graphql-subscriptions";
 import { SubscriptionServer } from "subscriptions-transport-ws";
-import { makeExecutableSchema } from "graphql-tools";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 
 import { createChatClient } from "./chat";
 import { createWebhooks } from "./webhooks";
