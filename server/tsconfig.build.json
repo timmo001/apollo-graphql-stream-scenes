@@ -1,0 +1,13 @@
+{
+  "exclude": [
+    "**/*spec.ts",
+    "dist",
+    "frontend",
+    "next-env.d.ts",
+    "node_modules",
+    "public",
+    "test",
+    "tray"
+  ],
+  "extends": "./tsconfig.json"
+}

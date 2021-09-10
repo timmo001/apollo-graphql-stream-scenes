@@ -15,12 +15,19 @@
     "express": "4.17.1",
     "graphql": "15.5.3",
     "graphql-subscriptions": "1.2.1",
-    "nodemon": "2.0.12",
     "subscriptions-transport-ws": "0.9.19",
     "tmi.js": "1.8.5"
   },
   "scripts": {
-    "start": "node index.js",
-    "start:dev": "nodemon index.js"
+    "build": "rimraf dist && tsc",
+    "start": "yarn build && node dist/tray.js",
+    "start:dev": "ts-node-dev --no-notify ./src",
+    "start:prod": "node dist/tray.js"
+  },
+  "devDependencies": {
+    "@types/node": "16.9.1",
+    "rimraf": "3.0.2",
+    "ts-node-dev": "1.1.8",
+    "typescript": "4.4.3"
   }
 }
