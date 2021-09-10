@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "start": "yarn build && node dist",
+    "start:dev": "ts-node-dev --no-notify ./src",
+    "start:prod": "node dist/tray.js"
+  },
   "dependencies": {
     "@graphql-tools/schema": "8.2.0",
     "@graphql-tools/utils": "8.2.2",
@@ -18,12 +24,6 @@
     "graphql-subscriptions": "1.2.1",
     "subscriptions-transport-ws": "0.9.19",
     "tmi.js": "1.8.5"
-  },
-  "scripts": {
-    "build": "rimraf dist && tsc",
-    "start": "yarn build && node dist",
-    "start:dev": "ts-node-dev --no-notify ./src",
-    "start:prod": "node dist/tray.js"
   },
   "devDependencies": {
     "@types/node": "16.9.1",
