@@ -4,11 +4,11 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.4.10",
-    "@apollo/link-ws": "^2.0.0-beta.3",
+    "@apollo/link-ws": "2.0.0-beta.3",
     "@emotion/core": "11.0.0",
     "@emotion/styled": "11.3.0",
     "@reach/router": "1.3.4",
-    "@repeaterjs/react-hooks": "^0.1.1",
+    "@repeaterjs/react-hooks": "0.1.1",
     "emotion-reset": "3.0.1",
     "framer-motion": "4.1.17",
     "graphql": "15.5.3",
