@@ -1,13 +1,12 @@
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { SceneProps } from "../components/scene";
+import { useValue } from "@repeaterjs/react-hooks";
 import canvasBg from "../images/canvas-bg.png";
 import useChannel from "../hooks/channel";
 import useUpcomingStreams from "../hooks/upcoming-streams";
-import { useValue } from "@repeaterjs/react-hooks";
 
-export default function MissionBriefingScene() {
+export default function MissionBriefingScene(_: SceneProps) {
   const channel = useChannel();
   const upcomingStreams = useUpcomingStreams();
 
@@ -50,7 +49,7 @@ export default function MissionBriefingScene() {
 
   return (
     <div
-      css={{
+      style={{
         width: "100vw",
         height: "100vh",
         backgroundColor: "#311C87",
@@ -59,7 +58,7 @@ export default function MissionBriefingScene() {
       }}
     >
       <div
-        css={{
+        style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -68,7 +67,7 @@ export default function MissionBriefingScene() {
         }}
       >
         <div
-          css={{
+          style={{
             width: "100%",
             paddingLeft: "2rem",
             paddingRight: "2rem",
@@ -80,7 +79,7 @@ export default function MissionBriefingScene() {
           }}
         >
           <div
-            css={{
+            style={{
               display: "flex",
               justifyContent: "flex-start",
               alignItems: "stretch",
@@ -89,7 +88,7 @@ export default function MissionBriefingScene() {
             }}
           >
             <div
-              css={{
+              style={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -97,7 +96,7 @@ export default function MissionBriefingScene() {
               }}
             >
               <h1
-                css={{
+                style={{
                   fontFamily: "Source Sans Pro",
                   fontSize: "7.5rem",
                   fontWeight: 800,
@@ -109,21 +108,21 @@ export default function MissionBriefingScene() {
               </h1>
               {upcomingStreams ? (
                 <div
-                  css={{
+                  style={{
                     fontSize: "2.5rem",
                     fontFamily: "Source Sans Pro",
                   }}
                 >
                   <h4
-                    css={{ marginBottom: 8, paddingLeft: 8, fontWeight: 600 }}
+                    style={{ marginBottom: 8, paddingLeft: 8, fontWeight: 600 }}
                   >
                     Upcoming Streams:
                   </h4>
-                  <div css={{ paddingLeft: 8, minHeight: 80 }}>
+                  <div style={{ paddingLeft: 8, minHeight: 80 }}>
                     <AnimatePresence>
                       {upcomingStream && (
                         <motion.h5
-                          css={{
+                          style={{
                             fontWeight: 600,
                           }}
                           initial={{ opacity: 0 }}

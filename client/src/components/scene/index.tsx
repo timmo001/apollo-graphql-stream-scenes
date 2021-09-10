@@ -23,7 +23,12 @@ const showOptions = {
   },
 };
 
-export default function Scene({ showType }) {
+export interface SceneProps {
+  path: string;
+  showType?: string;
+}
+
+export default function Scene({ showType }: SceneProps) {
   const channel = useChannel();
   const userCount = useCurrentViewers();
   const upcomingStreams = useUpcomingStreams();
@@ -67,7 +72,7 @@ export default function Scene({ showType }) {
 
   return (
     <div
-      css={{
+      style={{
         width: "100vw",
         height: "100vh",
         backgroundColor: "#311C87",
@@ -76,7 +81,7 @@ export default function Scene({ showType }) {
       }}
     >
       <div
-        css={{
+        style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -85,7 +90,7 @@ export default function Scene({ showType }) {
         }}
       >
         <div
-          css={{
+          style={{
             width: "100%",
             paddingLeft: "2rem",
             paddingRight: "2rem",
@@ -101,7 +106,7 @@ export default function Scene({ showType }) {
           }}
         >
           <div
-            css={{
+            style={{
               width: "40%",
               display: "flex",
               justifyContent: "flex-start",
@@ -111,14 +116,14 @@ export default function Scene({ showType }) {
             }}
           >
             <div
-              css={{
+              style={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
               }}
             >
               <h5
-                css={{
+                style={{
                   fontFamily: "Source Sans Pro",
                   fontSize: "1.5rem",
                   fontWeight: 800,
@@ -130,7 +135,7 @@ export default function Scene({ showType }) {
                 {showOptions[showType].title}
               </h5>
               <h1
-                css={{
+                style={{
                   fontFamily: "Source Sans Pro",
                   fontSize: "2.5rem",
                   fontWeight: 800,
@@ -143,7 +148,7 @@ export default function Scene({ showType }) {
               </h1>
               {channel?.currentStream?.streamers.length > 0 && (
                 <h2
-                  css={{
+                  style={{
                     fontFamily: "Source Code Pro",
                     fontWeight: 600,
                     letterSpacing: 1.2,
@@ -157,7 +162,7 @@ export default function Scene({ showType }) {
           </div>
         </div>
         <div
-          css={{
+          style={{
             width: "100%",
             paddingTop: 2,
             paddingBottom: 2,
@@ -166,7 +171,7 @@ export default function Scene({ showType }) {
           }}
         >
           <div
-            css={{
+            style={{
               display: "flex",
               alignItems: "center",
               paddingLeft: "2rem",
@@ -174,7 +179,7 @@ export default function Scene({ showType }) {
           >
             {typeof userCount !== "undefined" && (
               <h5
-                css={{
+                style={{
                   display: "flex",
                   alignItems: "flex-start",
                   fontSize: "1.2rem",
@@ -185,18 +190,19 @@ export default function Scene({ showType }) {
                   borderRight: "2px solid #311C87",
                 }}
               >
-                <FaTwitch css={{ marginRight: 4, marginTop: 3 }} /> {userCount}
+                <FaTwitch style={{ marginRight: 4, marginTop: 3 }} />{" "}
+                {userCount}
               </h5>
             )}
             {upcomingStreams ? (
-              <div css={{ display: "flex", fontFamily: "Source Sans Pro" }}>
-                <span css={{ marginRight: 4, fontWeight: 600 }}>
+              <div style={{ display: "flex", fontFamily: "Source Sans Pro" }}>
+                <span style={{ marginRight: 4, fontWeight: 600 }}>
                   Upcoming Streams:
                 </span>
                 <AnimatePresence>
                   {upcomingStream && (
                     <motion.h5
-                      css={{
+                      style={{
                         fontWeight: 600,
                       }}
                       initial={{ opacity: 0 }}

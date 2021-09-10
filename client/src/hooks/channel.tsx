@@ -1,6 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 
-export default () => {
+function Channel() {
   const { data, error } = useQuery(gql`
     query CurrentStream {
       channel {
@@ -18,4 +18,6 @@ export default () => {
   }
 
   return data?.channel;
-};
+}
+
+export default Channel;

@@ -1,11 +1,10 @@
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
+import { SceneProps } from "../components/scene";
 import canvasBg from "../images/canvas-bg.png";
 
-export default function MissionBriefingScene() {
+export default function MissionBriefingScene(_: SceneProps) {
   return (
     <div
-      css={{
+      style={{
         width: "100vw",
         height: "100vh",
         backgroundColor: "#311C87",
@@ -14,7 +13,7 @@ export default function MissionBriefingScene() {
       }}
     >
       <div
-        css={{
+        style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -23,7 +22,7 @@ export default function MissionBriefingScene() {
         }}
       >
         <h1
-          css={{
+          style={{
             fontFamily: "Source Sans Pro",
             fontSize: "7.5rem",
             fontWeight: 800,

@@ -8,7 +8,7 @@ const MEME_SUBSCRIPTION = gql`
   }
 `;
 
-export default function useMemes() {
+export default function useMemes(): any {
   const client = useApolloClient();
   const [memes, push, stop] = useRepeater();
 

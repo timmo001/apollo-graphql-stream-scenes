@@ -16,13 +16,13 @@ export default function useRaids() {
   const [raids, push, stop] = useRepeater();
 
   useEffect(() => {
-    const unsubscribe = client
-      .subscribe({ query: RAID_SUBSCRIPTION })
-      .subscribe({
+    function unsubscribe() {
+      client.subscribe({ query: RAID_SUBSCRIPTION }).subscribe({
         next: ({ data }) => {
           push(data.raid);
         },
       });
+    }
 
     return () => {
       unsubscribe();

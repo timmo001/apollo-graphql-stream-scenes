@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
 import { motion, AnimatePresence } from "framer-motion";
 import randomcolor from "randomcolor";
 
@@ -10,7 +8,7 @@ export default function Chat() {
 
   return (
     <ul
-      css={{
+      style={{
         height: "100%",
         width: "100%",
         overflow: "hidden",
@@ -19,31 +17,31 @@ export default function Chat() {
         justifyContent: "flex-end",
         textShadow: "1px 1px rgba(0, 0, 0, 0.5)",
         fontSize: 20,
-        "& .emote": {
-          marginLeft: "4px",
-          marginRight: "4px",
-        },
-        "& .emote + .emote": {
-          marginLeft: 0,
-        },
+        // "& .emote": {
+        //   marginLeft: "4px",
+        //   marginRight: "4px",
+        // },
+        // "& .emote + .emote": {
+        //   marginLeft: 0,
+        // },
       }}
     >
       <AnimatePresence initial={false}>
         {messages.map((message, index) => (
           <motion.li
-            css={{
+            style={{
               display: "flex",
               justifyContent: "flex-start",
               alignItems: "stretch",
               marginBottom: "4px",
             }}
-            positionTransition
+            // positionTransition
             initial={{ opacity: 0, y: 50, scale: 0.3 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             key={`${message.displayName}-${index}`}
           >
             <span
-              css={{
+              style={{
                 paddingRight: "8px",
                 color: randomcolor({
                   hue: "#00FFFF",
@@ -61,7 +59,7 @@ export default function Chat() {
               {message.displayName}
             </span>
             <span
-              css={{
+              style={{
                 display: "inline-block",
                 fontWeight: "bold",
                 fontFamily: "Source Sans Pro",
@@ -70,7 +68,7 @@ export default function Chat() {
               }}
             >
               <span
-                css={{ color: "white", display: "flex", flexWrap: "wrap" }}
+                style={{ color: "white", display: "flex", flexWrap: "wrap" }}
                 dangerouslySetInnerHTML={{ __html: message.message }}
               />
             </span>

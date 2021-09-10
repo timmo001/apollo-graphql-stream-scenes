@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
 import { Router } from "@reach/router";
 
 import RestrictedArea from "./scenes/restricted-area";
@@ -13,7 +11,7 @@ import SceneTemplate from "./components/scene";
 
 function App() {
   return (
-    <Router css={{ width: "100vw", height: "100vh" }}>
+    <Router style={{ width: "100vw", height: "100vh" }}>
       <SceneTemplate path="/mission-briefing" showType="missionBriefing" />
       <SceneTemplate path="/launch-pad" showType="launchPad" />
       <SceneTemplate path="/orbit" showType="orbit" />

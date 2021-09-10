@@ -1,10 +1,8 @@
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
-
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useSound from "use-sound";
 
+import { SceneProps } from "../components/scene";
 import useMemes from "../hooks/memes";
 import waterDrop from "../sounds/water-drop.wav";
 
@@ -14,14 +12,14 @@ const FRAME_HEIGHT = 1080;
 const FRAME_PADDING = 20;
 const MAX_OFFSET_X = FRAME_WIDTH - IMAGE_WIDTH - FRAME_PADDING * 2;
 
-const Memes = () => {
+const Memes = (_: SceneProps) => {
   const meme = useMemes();
   const [current, setCurrent] = useState(meme);
   const [initialY, setIntialY] = useState(0);
   const [stale, setStale] = useState(false);
   // TODO: add bubble sound on enter 🛁
   const [play] = useSound(waterDrop);
-  const timeout = useRef();
+  const timeout = useRef<any>();
 
   useEffect(() => {
     if (current !== meme) {
@@ -48,7 +46,7 @@ const Memes = () => {
 
   return (
     <div
-      css={{
+      style={{
         width: "100vw",
         height: "100vh",
         display: "flex",
@@ -76,7 +74,7 @@ const Memes = () => {
               translateY: initialY - 400,
             }}
             src={current.url}
-            css={{
+            style={{
               width: IMAGE_WIDTH,
               boxShadow: "0 0 80px rgba(0,0,0,0.3)",
             }}

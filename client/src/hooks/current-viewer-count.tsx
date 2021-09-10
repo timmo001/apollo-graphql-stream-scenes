@@ -1,6 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 
-export default () => {
+function CurrentViewerCount() {
   const { data, error } = useQuery(
     gql`
       query Channel {
@@ -19,4 +19,6 @@ export default () => {
   }
 
   return data?.channel?.currentViewers;
-};
+}
+
+export default CurrentViewerCount;

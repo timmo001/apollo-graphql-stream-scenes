@@ -1,6 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 
-export default () => {
+function UpcomingStreams() {
   const { data, error } = useQuery(gql`
     query UpcomingStreams {
       streams {
@@ -17,4 +17,6 @@ export default () => {
   }
 
   return data?.streams;
-};
+}
+
+export default UpcomingStreams;

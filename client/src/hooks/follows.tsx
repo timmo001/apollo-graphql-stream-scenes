@@ -13,13 +13,13 @@ export default function useFollows() {
   const [follows, push, stop] = useRepeater();
 
   useEffect(() => {
-    const unsubscribe = client
-      .subscribe({ query: FOLLOW_SUBSCRIPTION })
-      .subscribe({
+    function unsubscribe() {
+      client.subscribe({ query: FOLLOW_SUBSCRIPTION }).subscribe({
         next: ({ data }) => {
           push(data.follow);
         },
       });
+    }
 
     return () => {
       unsubscribe();
