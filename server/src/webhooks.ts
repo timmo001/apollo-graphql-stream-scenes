@@ -3,9 +3,9 @@ import axios from "axios";
 const FOLLOW = "FOLLOW";
 const SUBSCRIBE = "SUBSCRIBE";
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
+// function getRandomInt(max) {
+//   return Math.floor(Math.random() * Math.floor(max));
+// }
 
 const createWebhooks = (app, pubsub) => {
   app.get("/webhooks/follows", async (req, res) => {
