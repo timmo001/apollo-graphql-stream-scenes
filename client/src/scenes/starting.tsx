@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "@emotion/core";
+import { jsx } from "@emotion/react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import canvasBg from "../images/canvas-bg.png";

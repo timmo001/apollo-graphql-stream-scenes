@@ -1,5 +1,6 @@
 /** @jsx jsx */
-import { jsx } from "@emotion/core";
+import { jsx } from "@emotion/react";
+
 import { useEffect } from "react";
 import useSound from "use-sound";
 

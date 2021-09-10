@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from "@emotion/core";
 import { FaTwitch } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 

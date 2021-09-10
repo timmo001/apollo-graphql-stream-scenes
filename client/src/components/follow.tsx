@@ -1,6 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "@emotion/core";
-
+import { jsx } from "@emotion/react";
 import { useEffect, useState, useRef } from "react";
 import useSound from "use-sound";
 import { motion, AnimatePresence } from "framer-motion";

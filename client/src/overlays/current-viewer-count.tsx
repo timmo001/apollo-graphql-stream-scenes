@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "@emotion/core";
+import { jsx } from "@emotion/react";
 import { FaTwitch } from "react-icons/fa";
 
 import useCurrentViewers from "../hooks/current-viewer-count";

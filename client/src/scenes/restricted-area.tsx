@@ -1,6 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "@emotion/core";
-
+import { jsx } from "@emotion/react";
 import canvasBg from "../images/canvas-bg.png";
 
 export default function MissionBriefingScene() {

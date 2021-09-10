@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Global, css } from "@emotion/core";
+import { Global, css } from "@emotion/react";
 import emotionReset from "emotion-reset";
 import "typeface-source-sans-pro";
 import "typeface-source-code-pro";
@@ -62,7 +62,6 @@ ReactDOM.render(
           box-sizing: border-box;
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
-          font-smoothing: antialiased;
         }
       `}
     />
