@@ -1,7 +1,7 @@
-const { gql } = require("apollo-server-express");
-const { subHours, addHours, format } = require("date-fns");
-const { format: formatWithTZ, utcToZonedTime } = require("date-fns-tz");
-const axios = require("axios");
+import { format as formatWithTZ, utcToZonedTime } from "date-fns-tz";
+import { gql } from "apollo-server-express";
+import { subHours, addHours, format } from "date-fns";
+import axios from "axios";
 
 const FOLLOW = "FOLLOW";
 const SUBSCRIBE = "SUBSCRIBE";
@@ -217,7 +217,4 @@ const createResolvers = (pubsub) => {
   };
 };
 
-module.exports = {
-  typeDefs,
-  createResolvers,
-};
+export { typeDefs, createResolvers };

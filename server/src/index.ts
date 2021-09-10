@@ -1,16 +1,16 @@
 require("dotenv").config();
 
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const { execute, subscribe } = require("graphql");
-const { createServer } = require("http");
-const { PubSub } = require("graphql-subscriptions");
-const { SubscriptionServer } = require("subscriptions-transport-ws");
-const { makeExecutableSchema } = require("graphql-tools");
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import { execute, subscribe } from "graphql";
+import { createServer } from "http";
+import { PubSub } from "graphql-subscriptions";
+import { SubscriptionServer } from "subscriptions-transport-ws";
+import { makeExecutableSchema } from "graphql-tools";
 
-const { typeDefs, createResolvers } = require("./graphql");
-const { createChatClient } = require("./chat");
-const { createWebhooks } = require("./webhooks");
+import { createChatClient } from "./chat";
+import { createWebhooks } from "./webhooks";
+import { typeDefs, createResolvers } from "./graphql";
 
 const PORT = 4000;
 
@@ -22,10 +22,13 @@ async function main() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    uploads: false,
-    playground: true,
+    // uploads: false,
+    // playground: true,
     introspection: true,
   });
+
+  await server.start();
+
   server.applyMiddleware({ app });
 
   const ws = createServer(app);

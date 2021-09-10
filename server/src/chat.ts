@@ -1,5 +1,5 @@
-const tmi = require("tmi.js");
-const cloudinary = require("cloudinary").v2;
+import { v2 as cloudinary } from "cloudinary";
+import tmi from "tmi.js";
 
 cloudinary.config({
   cloud_name: "apollographql",
@@ -184,6 +184,4 @@ const createChatClient = (pubsub) => {
   });
 };
 
-module.exports = {
-  createChatClient,
-};
+export { createChatClient };

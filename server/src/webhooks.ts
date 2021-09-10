@@ -1,5 +1,4 @@
-const axios = require("axios");
-const bodyParser = require("body-parser");
+import axios from "axios";
 
 const FOLLOW = "FOLLOW";
 const SUBSCRIBE = "SUBSCRIBE";
@@ -9,8 +8,6 @@ function getRandomInt(max) {
 }
 
 const createWebhooks = (app, pubsub) => {
-  const jsonParser = bodyParser.json();
-
   app.get("/webhooks/follows", async (req, res) => {
     // pubsub.publish(FOLLOW, {
     //   follow: `theworstdev-${getRandomInt(1000)}`,
@@ -20,7 +17,7 @@ const createWebhooks = (app, pubsub) => {
     res.status(200).send(req.query["hub.challenge"]);
   });
 
-  app.post("/webhooks/follows", jsonParser, async (req, res) => {
+  app.post("/webhooks/follows", async (req, res) => {
     // handle twitch webhooks here
     const follow = req.body.data[0].from_name;
     pubsub.publish(FOLLOW, { follow });
@@ -31,7 +28,7 @@ const createWebhooks = (app, pubsub) => {
     res.status(200).send(req.query["hub.challenge"]);
   });
 
-  app.post("/webhooks/subscriptions", jsonParser, async (req, res) => {
+  app.post("/webhooks/subscriptions", async (req, res) => {
     // handle twitch webhooks here
     const eventData = req.body.data[0].event_data;
     pubsub.publish(SUBSCRIBE, {
@@ -102,6 +99,4 @@ const createWebhooks = (app, pubsub) => {
   registerWebhooks();
 };
 
-module.exports = {
-  createWebhooks,
-};
+export { createWebhooks };
