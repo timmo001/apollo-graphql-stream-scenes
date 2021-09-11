@@ -1,6 +1,8 @@
+import { IResolvers } from "@graphql-tools/utils";
 import { ApiClient } from "@twurple/api";
 import { AuthProvider } from "@twurple/auth";
 import { gql } from "apollo-server-express";
+import { PubSub } from "graphql-subscriptions";
 // import { format as formatWithTZ, utcToZonedTime } from "date-fns-tz";
 // import { subHours, addHours, format } from "date-fns";
 // import axios from "axios";
@@ -12,7 +14,7 @@ const RAID = "RAID";
 const SOUND_PLAYED = "SOUND_PLAYED";
 const DISPLAY_MEME = "DISPLAY_MEME";
 
-const typeDefs = gql`
+export const typeDefs = gql`
   type Query {
     channel: Channel!
     streams(limit: Int): [Stream!]!
@@ -64,12 +66,15 @@ const typeDefs = gql`
   }
 `;
 
-const createResolvers = (authProvider: AuthProvider, pubsub) => {
+export async function createResolvers(
+  authProvider: AuthProvider,
+  pubsub: PubSub
+): Promise<IResolvers | Array<IResolvers>> {
   const apiClient = new ApiClient({ authProvider });
 
   return {
     Query: {
-      streams: async (_, { limit = 5 }) => {
+      streams: async (_: any, { limit = 5 }: any) => {
         // const today = new Date();
         // const URL = `https://www.googleapis.com/calendar/v3/calendars/${
         //   process.env.GOOGLE_CALENDAR_ID
@@ -123,7 +128,6 @@ const createResolvers = (authProvider: AuthProvider, pubsub) => {
           //     },
           //   }
           // );
-
           const channel = await apiClient.channels.getChannelInfo(
             process.env.CHANNEL
           );
@@ -138,7 +142,6 @@ const createResolvers = (authProvider: AuthProvider, pubsub) => {
           //     },
           //   }
           // );
-
           return {
             id: parseInt(channel.id, 10),
             title: channel.title,
@@ -215,7 +218,6 @@ const createResolvers = (authProvider: AuthProvider, pubsub) => {
         //     "Client-ID": process.env.CLIENT_ID,
         //   },
         // });
-
         const stream = await apiClient.streams.getStreamByUserId(id);
 
         return stream ? stream.viewers : 0;
@@ -227,6 +229,4 @@ const createResolvers = (authProvider: AuthProvider, pubsub) => {
       },
     },
   };
-};
-
-export { typeDefs, createResolvers };
+}

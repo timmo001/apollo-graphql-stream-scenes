@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 
 const FOLLOW = "FOLLOW";
 const SUBSCRIBE = "SUBSCRIBE";
@@ -7,7 +7,7 @@ const SUBSCRIBE = "SUBSCRIBE";
 //   return Math.floor(Math.random() * Math.floor(max));
 // }
 
-const createWebhooks = (app, pubsub) => {
+const createWebhooks = (authProvider, app, pubsub) => {
   app.get("/webhooks/follows", async (req, res) => {
     // pubsub.publish(FOLLOW, {
     //   follow: `theworstdev-${getRandomInt(1000)}`,

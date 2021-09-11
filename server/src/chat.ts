@@ -72,7 +72,7 @@ const buildResponse = (message: string, tags: Map<string, string>) => {
   };
 };
 
-const createChatClient = async (authProvider: AuthProvider, pubsub: PubSub) => {
+async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
   try {
     console.log("Chat - Connect to", process.env.CHANNEL);
     const chatClient = new ChatClient({
@@ -105,7 +105,6 @@ const createChatClient = async (authProvider: AuthProvider, pubsub: PubSub) => {
         msg: PrivateMessage
       ) => {
         // console.log("New message:", { channel, user, message, msg });
-
         const response = buildResponse(message, msg.tags);
         // await chatClient.say(channel, message);
         pubsub.publish(CHAT_MESSAGE, { chat: response });
@@ -186,23 +185,11 @@ const createChatClient = async (authProvider: AuthProvider, pubsub: PubSub) => {
               const apiClient = new ApiClient({ authProvider });
               const user = await apiClient.users.getUserByName(username);
 
-              const stream = await user.getStream();
+              const soChannel = await apiClient.channels.getChannelInfo(user);
 
               await chatClient.say(
                 channel,
-                `Go follow @${user.displayName}!${
-                  stream
-                    ? ` They are currently playing: ${stream.gameName} - ${stream.title} (${(
-                        await stream.getTags()
-                      )
-                        ?.map((tag): string => {
-                          const name = tag.getName("en-us");
-                          console.log("Tag:", tag, name);
-                          return name;
-                        })
-                        .join(", ")})`
-                    : ""
-                }`
+                `Check out @${user.displayName}! Their latest stream was: ${soChannel.title} - ${soChannel.gameName}`
               );
               break;
             default:
@@ -225,6 +212,6 @@ const createChatClient = async (authProvider: AuthProvider, pubsub: PubSub) => {
   } catch (e) {
     console.error("Error:", e);
   }
-};
+}
 
 export { createChatClient };
