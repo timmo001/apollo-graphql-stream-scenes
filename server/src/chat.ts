@@ -1,4 +1,4 @@
-import { ApiClient, HelixTag } from "@twurple/api";
+import { ApiClient } from "@twurple/api";
 import { AuthProvider } from "@twurple/auth";
 import {
   ChatClient,
@@ -46,29 +46,31 @@ const memeMap = {
 
 const sleep = (time: number) => new Promise((res) => setTimeout(res, time));
 
-const buildResponse = (message: string, tags: Map<string, string>) => {
-  let emotes = null;
+const buildResponse = (user: string, message: string, msg: PrivateMessage) => {
+  const emotes = [];
+  let newMessage = "";
 
-  const emoteObj = tags["emotes"];
-
-  if (emoteObj) {
-    emotes = Object.keys(emoteObj).reduce((arr, emoteCode) => {
-      const instances = emoteObj[emoteCode];
-
-      const codesWithStartEnd = instances.map((instance: any) => {
-        const [start, end] = instance.split("-");
-
-        return [emoteCode, start, end];
+  for (const messagePart of msg.parseEmotes()) {
+    // console.log(messagePart);
+    if (messagePart.type === "emote") {
+      const url = messagePart.displayInfo.getUrl({
+        animationSettings: "default",
+        backgroundType: "dark",
+        size: "1.0",
       });
-
-      return [...arr, ...codesWithStartEnd];
-    }, []);
+      emotes.push(url);
+      newMessage += `<img src="${url}" alt="${messagePart.name}" style="margin: 0 2px;" />`;
+    } else if (messagePart.type === "cheer")
+      newMessage += `<img src="${messagePart.displayInfo.url}" alt="${messagePart.name}" style="margin-left: "4px"; margin-right: "4px";" />`;
+    else newMessage += messagePart.text;
   }
+  // const emotes = .map((message: ParsedMessagePart) => {
+  // });
 
   return {
     emotes,
-    message,
-    displayName: tags["display-name"],
+    message: newMessage,
+    displayName: user,
   };
 };
 
@@ -86,10 +88,10 @@ async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
     // });
     chatClient.onRaid(
       (
-        channel: string,
+        _channel: string,
         user: string,
         raidInfo: ChatRaidInfo,
-        msg: UserNotice
+        _msg: UserNotice
       ) => {
         pubsub.publish(RAID, {
           raid: { username: user, viewers: raidInfo.viewerCount },
@@ -105,7 +107,7 @@ async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
         msg: PrivateMessage
       ) => {
         // console.log("New message:", { channel, user, message, msg });
-        const response = buildResponse(message, msg.tags);
+        const response = buildResponse(user, message, msg);
         // await chatClient.say(channel, message);
         pubsub.publish(CHAT_MESSAGE, { chat: response });
 
@@ -208,7 +210,8 @@ async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
               });
           }
         } else {
-          const response = buildResponse(message, msg.tags);
+          const response = buildResponse(user, message, msg);
+          console.log("response:", response);
           pubsub.publish(CHAT_MESSAGE, { chat: response });
         }
       }

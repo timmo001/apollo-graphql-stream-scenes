@@ -17,13 +17,6 @@ export default function Chat() {
         justifyContent: "flex-end",
         textShadow: "1px 1px rgba(0, 0, 0, 0.5)",
         fontSize: 20,
-        // "& .emote": {
-        //   marginLeft: "4px",
-        //   marginRight: "4px",
-        // },
-        // "& .emote + .emote": {
-        //   marginLeft: 0,
-        // },
       }}
     >
       <AnimatePresence initial={false}>

@@ -3,9 +3,8 @@ import { ApiClient } from "@twurple/api";
 import { AuthProvider } from "@twurple/auth";
 import { gql } from "apollo-server-express";
 import { PubSub } from "graphql-subscriptions";
-// import { format as formatWithTZ, utcToZonedTime } from "date-fns-tz";
-// import { subHours, addHours, format } from "date-fns";
-// import axios from "axios";
+import { format as formatWithTZ, utcToZonedTime } from "date-fns-tz";
+import { subHours, addHours, format } from "date-fns";
 
 const FOLLOW = "FOLLOW";
 const SUBSCRIBE = "SUBSCRIBE";
@@ -81,65 +80,40 @@ export class GraphQL {
   async createResolvers(): Promise<IResolvers | Array<IResolvers>> {
     return {
       Query: {
-        streams: async (_: any, { limit = 5 }: any) => {
-          // const today = new Date();
-          // const URL = `https://www.googleapis.com/calendar/v3/calendars/${
-          //   process.env.GOOGLE_CALENDAR_ID
-          // }/events?key=${
-          //   process.env.GOOGLE_API_KEY
-          // }&orderBy=startTime&singleEvents=true&timeMin=${today.toISOString()}&maxResults=${limit}`;
-          // try {
-          //   const { data: events } = await axios.get(URL);
-          //   const streamEvents = events.items.filter((event) => {
-          //     if (
-          //       event.summary.includes("Mission Briefing") ||
-          //       event.summary.includes("Launch Pad") ||
-          //       event.summary.includes("Orbit")
-          //     ) {
-          //       return true;
-          //     }
-          //     return false;
-          //   });
-          //   return streamEvents.map((event) => {
-          //     return {
-          //       id: event.id,
-          //       title: event.summary.replace(/^.+:\s/, ""),
-          //       description: event.description,
-          //       startTime: formatWithTZ(
-          //         utcToZonedTime(
-          //           new Date(event.start.dateTime),
-          //           "America/Los_Angeles"
-          //         ),
-          //         "ha zzz",
-          //         { timeZone: "America/Los_Angeles" }
-          //       ),
-          //       date: format(new Date(event.start.dateTime), "MMM do"),
-          //     };
-          //   });
-          // } catch (error) {
-          //   console.error(error);
-          //   return null;
-          // }
-          return null;
-        },
+        // streams: async (_: any, { limit = 5 }: any) => {
+        //   return null;
+        // },
         channel: async () => {
           try {
-            console.log("Get user");
+            console.log("Get channel data");
             const user = await this.apiClient.users.getUserByName(
               process.env.CHANNEL
             );
-
-            console.log("Get channel info");
             const channel = await this.apiClient.channels.getChannelInfo(user);
+            const stream = await this.apiClient.streams.getStreamByUserName(
+              user
+            );
 
             const data = {
               id: parseInt(channel.id, 10),
               title: channel.title,
               views: user.views,
               followers: (await user.getFollows()).total,
+              currentStream: {
+                id: parseInt(channel.id, 10),
+                title: channel.title,
+                startTime: stream
+                  ? formatWithTZ(
+                      utcToZonedTime(stream.startDate, "Europe/London"),
+                      "ha zzz",
+                      { timeZone: "Europe/London" }
+                    )
+                  : null,
+                date: stream ? format(stream.startDate, "MMM do") : null,
+              },
             };
 
-            console.log("Channel info:", data);
+            console.log("Channel data:", data);
 
             return data;
           } catch (e) {
@@ -169,52 +143,50 @@ export class GraphQL {
       },
       Channel: {
         currentStream: async () => {
-          // const now = new Date();
-          // const start = subHours(now, 2);
-          // const end = addHours(now, 2);
-          // const URL = `https://www.googleapis.com/calendar/v3/calendars/${
-          //   process.env.GOOGLE_CALENDAR_ID
-          // }/events?key=${
-          //   process.env.GOOGLE_API_KEY
-          // }&orderBy=startTime&singleEvents=true&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&maxResults=1`;
-          // try {
-          //   const { data: events } = await axios.get(URL);
-          //   const [event] = events.items;
-          //   if (!event) {
-          //     return null;
-          //   }
-          //   return {
-          //     id: event.id,
-          //     title: event.summary.replace(/^.+:\s/, ""),
-          //     description: event.description,
-          //     startTime: formatWithTZ(
-          //       utcToZonedTime(
-          //         new Date(event.start.dateTime),
-          //         "America/Los_Angeles"
-          //       ),
-          //       "ha zzz",
-          //       { timeZone: "America/Los_Angeles" }
-          //     ),
-          //     date: format(new Date(event.start.dateTime), "MMM do"),
-          //   };
-          // } catch (error) {
-          //   console.error(error);
-          //   return null;
-          // }
-          return null;
+          console.log("Get current stream data");
+
+          try {
+            const user = await this.apiClient.users.getUserByName(
+              process.env.CHANNEL
+            );
+            const channel = await this.apiClient.channels.getChannelInfo(user);
+            const stream = await this.apiClient.streams.getStreamByUserName(
+              user
+            );
+
+            const data = {
+              id: parseInt(channel.id, 10),
+              title: channel.title,
+              startTime: stream
+                ? formatWithTZ(
+                    utcToZonedTime(stream.startDate, "Europe/London"),
+                    "ha zzz",
+                    { timeZone: "Europe/London" }
+                  )
+                : null,
+              date: stream ? format(stream.startDate, "MMM do") : null,
+            };
+
+            console.log("Current stream:", data);
+
+            return data;
+          } catch (e) {
+            console.error("Error getting current stream data:", e);
+            return null;
+          }
         },
         currentViewers: async ({ id }) => {
-          // const {
-          //   data: { stream },
-          // } = await axios.get(`https://api.twitch.tv/v5/streams/${id}`, {
-          //   headers: {
-          //     authorization: `Bearer ${authData["access_token"]}`,
-          //     "Client-ID": process.env.CLIENT_ID,
-          //   },
-          // });
-          const stream = await this.apiClient.streams.getStreamByUserId(id);
+          console.log("Get current viewers data");
 
-          return stream ? stream.viewers : 0;
+          const stream = await this.apiClient.streams.getStreamByUserName(
+            process.env.CHANNEL
+          );
+
+          const data = stream ? stream.viewers : 0;
+
+          console.log("Current viewers:", data);
+
+          return data;
         },
       },
       Stream: {
