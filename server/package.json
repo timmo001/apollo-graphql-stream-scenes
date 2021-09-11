@@ -26,6 +26,7 @@
     "express": "4.17.1",
     "graphql": "15.5.3",
     "graphql-subscriptions": "1.2.1",
+    "open": "8.2.1",
     "query-string": "7.0.1",
     "subscriptions-transport-ws": "0.9.19"
   },

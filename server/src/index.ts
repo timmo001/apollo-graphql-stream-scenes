@@ -1,19 +1,20 @@
+import { AccessToken, RefreshingAuthProvider } from "@twurple/auth";
 import { ApolloServer } from "apollo-server-express";
 import { config } from "dotenv";
 import { createServer } from "http";
 import { execute, subscribe } from "graphql";
+import { existsSync, promises as fs } from "fs";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PubSub } from "graphql-subscriptions";
-import { AccessToken, RefreshingAuthProvider } from "@twurple/auth";
 import { SubscriptionServer } from "subscriptions-transport-ws";
-import { existsSync, promises as fs } from "fs";
 import express from "express";
 import queryString from "query-string";
 
 import { createChatClient } from "./chat";
 import { createWebhooks } from "./webhooks";
-import { typeDefs, createResolvers } from "./graphql";
+import { typeDefs, GraphQL } from "./graphql";
 import axios from "axios";
+import open from "open";
 
 config();
 
@@ -24,11 +25,14 @@ const SCOPES = ["chat:edit", "chat:read"];
 async function main() {
   const app = express();
   const pubsub = new PubSub();
-  // const resolvers = await createResolvers(authProvider, pubsub);
+
+  const graphQL = new GraphQL(pubsub);
+
+  const resolvers = await graphQL.createResolvers();
 
   const server = new ApolloServer({
     typeDefs,
-    // resolvers,
+    resolvers,
     // uploads: false,
     // playground: true,
     introspection: true,
@@ -75,7 +79,9 @@ async function main() {
           },
           { encode: false }
         );
-        console.log("Please open", authUrl, "and authorize the app");
+        console.log("Opening", authUrl);
+        open(authUrl);
+
         const code = await new Promise<string>((resolve) => {
           app.get("/authorize", (req): void => {
             console.log("Authorization code:", req.query.code);
@@ -107,6 +113,14 @@ async function main() {
           obtainmentTimestamp: Date.now(),
           refreshToken: authData.refresh_token,
         };
+
+        await fs.writeFile(
+          "./tokens.json",
+          JSON.stringify(tokenData, null, 4),
+          {
+            encoding: "utf8",
+          }
+        );
       }
 
       const authProvider = new RefreshingAuthProvider(
@@ -132,17 +146,19 @@ async function main() {
       console.log("authProvider.currentScopes:", authProvider.currentScopes);
       console.log("authProvider.tokenType:", authProvider.tokenType);
 
-      // new SubscriptionServer(
-      //   {
-      //     execute,
-      //     subscribe,
-      //     schema: makeExecutableSchema({ typeDefs, resolvers }),
-      //   },
-      //   {
-      //     server: ws,
-      //     path: "/subscriptions",
-      //   }
-      // );
+      graphQL.setup(authProvider);
+
+      new SubscriptionServer(
+        {
+          execute,
+          subscribe,
+          schema: makeExecutableSchema({ typeDefs, resolvers }),
+        },
+        {
+          server: ws,
+          path: "/subscriptions",
+        }
+      );
 
       createChatClient(authProvider, pubsub);
       // createWebhooks(authProvider, app, pubsub);
