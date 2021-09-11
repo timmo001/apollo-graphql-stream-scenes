@@ -11,7 +11,7 @@ import express from "express";
 import queryString from "query-string";
 
 import { createChatClient } from "./chat";
-// import { createWebhooks } from "./webhooks";
+import { createWebhooks } from "./webhooks";
 import { typeDefs, GraphQL } from "./graphql";
 import axios from "axios";
 import open from "open";
@@ -159,7 +159,7 @@ async function main() {
       );
 
       createChatClient(authProvider, pubsub);
-      // createWebhooks(authProvider, app, pubsub);
+      createWebhooks(authProvider, app, pubsub);
     } catch (e) {
       console.error("Error:", e);
     }
