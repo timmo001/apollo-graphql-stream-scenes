@@ -66,75 +66,97 @@ const createResolvers = (pubsub) => {
   return {
     Query: {
       streams: async (_, { limit = 5 }) => {
-        const today = new Date();
-        const URL = `https://www.googleapis.com/calendar/v3/calendars/${
-          process.env.GOOGLE_CALENDAR_ID
-        }/events?key=${
-          process.env.GOOGLE_API_KEY
-        }&orderBy=startTime&singleEvents=true&timeMin=${today.toISOString()}&maxResults=${limit}`;
-
-        try {
-          const { data: events } = await axios.get(URL);
-          const streamEvents = events.items.filter((event) => {
-            if (
-              event.summary.includes("Mission Briefing") ||
-              event.summary.includes("Launch Pad") ||
-              event.summary.includes("Orbit")
-            ) {
-              return true;
-            }
-
-            return false;
-          });
-
-          return streamEvents.map((event) => {
-            return {
-              id: event.id,
-              title: event.summary.replace(/^.+:\s/, ""),
-              description: event.description,
-              startTime: formatWithTZ(
-                utcToZonedTime(
-                  new Date(event.start.dateTime),
-                  "America/Los_Angeles"
-                ),
-                "ha zzz",
-                { timeZone: "America/Los_Angeles" }
-              ),
-              date: format(new Date(event.start.dateTime), "MMM do"),
-            };
-          });
-        } catch (error) {
-          console.error(error);
-          return null;
-        }
+        // const today = new Date();
+        // const URL = `https://www.googleapis.com/calendar/v3/calendars/${
+        //   process.env.GOOGLE_CALENDAR_ID
+        // }/events?key=${
+        //   process.env.GOOGLE_API_KEY
+        // }&orderBy=startTime&singleEvents=true&timeMin=${today.toISOString()}&maxResults=${limit}`;
+        // try {
+        //   const { data: events } = await axios.get(URL);
+        //   const streamEvents = events.items.filter((event) => {
+        //     if (
+        //       event.summary.includes("Mission Briefing") ||
+        //       event.summary.includes("Launch Pad") ||
+        //       event.summary.includes("Orbit")
+        //     ) {
+        //       return true;
+        //     }
+        //     return false;
+        //   });
+        //   return streamEvents.map((event) => {
+        //     return {
+        //       id: event.id,
+        //       title: event.summary.replace(/^.+:\s/, ""),
+        //       description: event.description,
+        //       startTime: formatWithTZ(
+        //         utcToZonedTime(
+        //           new Date(event.start.dateTime),
+        //           "America/Los_Angeles"
+        //         ),
+        //         "ha zzz",
+        //         { timeZone: "America/Los_Angeles" }
+        //       ),
+        //       date: format(new Date(event.start.dateTime), "MMM do"),
+        //     };
+        //   });
+        // } catch (error) {
+        //   console.error(error);
+        //   return null;
+        // }
       },
       channel: async () => {
-        const { data: userData } = await axios.get(
-          `https://api.twitch.tv/helix/users?login=${process.env.CHANNEL}`,
-          {
-            headers: {
-              authorization: `Bearer ${process.env.SUBSCRIPTIONS_TOKEN}`,
-              "Client-ID": process.env.CLIENT_ID,
-            },
-          }
-        );
+        console.log("Get Token..");
 
-        const { data: channelData } = await axios.get(
-          `https://api.twitch.tv/v5/channels/${userData.data[0].id}`,
-          {
-            headers: {
-              authorization: `Bearer ${process.env.SUBSCRIPTIONS_TOKEN}`,
-              "Client-ID": process.env.CLIENT_ID,
-            },
-          }
-        );
+        try {
+          const { status, data: authData } = await axios.post(
+            "https://id.twitch.tv/oauth2/token",
+            {
+              params: {
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
+                grant_type: "client_credentials",
+                scope: "viewing_activity_read",
+              },
+            }
+          );
 
-        return {
-          id: parseInt(channelData._id, 10),
-          title: channelData.status,
-          views: channelData.views,
-          followers: channelData.followers,
-        };
+          if (status !== 200) {
+            console.error("Authentication error:", status, authData);
+            return;
+          }
+
+          console.log("authData:", authData);
+
+          // const { data: userData } = await axios.get(
+          //   `https://api.twitch.tv/helix/users?login=${process.env.CHANNEL}`,
+          //   {
+          //     headers: {
+          //       authorization: `Bearer ${authData["access_token"]}`,
+          //       "Client-ID": process.env.CLIENT_ID,
+          //     },
+          //   }
+          // );
+
+          // const { data: channelData } = await axios.get(
+          //   `https://api.twitch.tv/v5/channels/${userData.data[0].id}`,
+          //   {
+          //     headers: {
+          //       authorization: `Bearer ${authData["access_token"]}`,
+          //       "Client-ID": process.env.CLIENT_ID,
+          //     },
+          //   }
+          // );
+
+          // return {
+          //   id: parseInt(channelData._id, 10),
+          //   title: channelData.status,
+          //   views: channelData.views,
+          //   followers: channelData.followers,
+          // };
+        } catch {
+          console.error("Error getting channel data");
+        }
       },
     },
     Subscription: {
@@ -159,52 +181,49 @@ const createResolvers = (pubsub) => {
     },
     Channel: {
       currentStream: async () => {
-        const now = new Date();
-        const start = subHours(now, 2);
-        const end = addHours(now, 2);
-
-        const URL = `https://www.googleapis.com/calendar/v3/calendars/${
-          process.env.GOOGLE_CALENDAR_ID
-        }/events?key=${
-          process.env.GOOGLE_API_KEY
-        }&orderBy=startTime&singleEvents=true&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&maxResults=1`;
-
-        try {
-          const { data: events } = await axios.get(URL);
-          const [event] = events.items;
-
-          if (!event) {
-            return null;
-          }
-
-          return {
-            id: event.id,
-            title: event.summary.replace(/^.+:\s/, ""),
-            description: event.description,
-            startTime: formatWithTZ(
-              utcToZonedTime(
-                new Date(event.start.dateTime),
-                "America/Los_Angeles"
-              ),
-              "ha zzz",
-              { timeZone: "America/Los_Angeles" }
-            ),
-            date: format(new Date(event.start.dateTime), "MMM do"),
-          };
-        } catch (error) {
-          console.error(error);
-          return null;
-        }
+        // const now = new Date();
+        // const start = subHours(now, 2);
+        // const end = addHours(now, 2);
+        // const URL = `https://www.googleapis.com/calendar/v3/calendars/${
+        //   process.env.GOOGLE_CALENDAR_ID
+        // }/events?key=${
+        //   process.env.GOOGLE_API_KEY
+        // }&orderBy=startTime&singleEvents=true&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&maxResults=1`;
+        // try {
+        //   const { data: events } = await axios.get(URL);
+        //   const [event] = events.items;
+        //   if (!event) {
+        //     return null;
+        //   }
+        //   return {
+        //     id: event.id,
+        //     title: event.summary.replace(/^.+:\s/, ""),
+        //     description: event.description,
+        //     startTime: formatWithTZ(
+        //       utcToZonedTime(
+        //         new Date(event.start.dateTime),
+        //         "America/Los_Angeles"
+        //       ),
+        //       "ha zzz",
+        //       { timeZone: "America/Los_Angeles" }
+        //     ),
+        //     date: format(new Date(event.start.dateTime), "MMM do"),
+        //   };
+        // } catch (error) {
+        //   console.error(error);
+        //   return null;
+        // }
       },
       currentViewers: async ({ id }) => {
-        const {
-          data: { stream },
-        } = await axios.get(`https://api.twitch.tv/v5/streams/${id}`, {
-          headers: {
-            authorization: `Bearer ${process.env.SUBSCRIPTIONS_TOKEN}`,
-            "Client-ID": process.env.CLIENT_ID,
-          },
-        });
+        const stream = undefined;
+        // const {
+        //   data: { stream },
+        // } = await axios.get(`https://api.twitch.tv/v5/streams/${id}`, {
+        //   headers: {
+        //     authorization: `Bearer ${authData["access_token"]}`,
+        //     "Client-ID": process.env.CLIENT_ID,
+        //   },
+        // });
 
         return stream ? stream.viewers : 0;
       },
