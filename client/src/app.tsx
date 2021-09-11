@@ -12,9 +12,7 @@ import SceneTemplate from "./components/scene";
 function App() {
   return (
     <Router style={{ width: "100vw", height: "100vh" }}>
-      <SceneTemplate path="/mission-briefing" showType="missionBriefing" />
-      <SceneTemplate path="/launch-pad" showType="launchPad" />
-      <SceneTemplate path="/orbit" showType="orbit" />
+      <SceneTemplate path="/" />
       <RestrictedArea path="/restricted-area" />
       <Brb path="/brb" />
       <Starting path="/starting" />

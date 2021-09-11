@@ -123,40 +123,25 @@ export class GraphQL {
           return null;
         },
         channel: async () => {
-          console.log("Get Token..");
-
           try {
-            // const { data: userData } = await axios.get(
-            //   `https://api.twitch.tv/helix/users?login=${process.env.CHANNEL}`,
-            //   {
-            //     headers: {
-            //       authorization: `Bearer ${authData["access_token"]}`,
-            //       "Client-ID": process.env.CLIENT_ID,
-            //     },
-            //   }
-            // );
-            const channel = await this.apiClient.channels.getChannelInfo(
-              process.env.CHANNEL
-            );
+            console.log("Get user");
             const user = await this.apiClient.users.getUserByName(
               process.env.CHANNEL
             );
 
-            // const { data: channelData } = await axios.get(
-            //   `https://api.twitch.tv/v5/channels/${userData.data[0].id}`,
-            //   {
-            //     headers: {
-            //       authorization: `Bearer ${authData["access_token"]}`,
-            //       "Client-ID": process.env.CLIENT_ID,
-            //     },
-            //   }
-            // );
-            return {
+            console.log("Get channel info");
+            const channel = await this.apiClient.channels.getChannelInfo(user);
+
+            const data = {
               id: parseInt(channel.id, 10),
               title: channel.title,
               views: user.views,
-              followers: await user.getFollows(),
+              followers: (await user.getFollows()).total,
             };
+
+            console.log("Channel info:", data);
+
+            return data;
           } catch (e) {
             console.error("Error getting channel data:", e);
           }
