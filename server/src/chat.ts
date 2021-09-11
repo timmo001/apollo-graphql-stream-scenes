@@ -189,7 +189,11 @@ async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
 
               await chatClient.say(
                 channel,
-                `Check out @${user.displayName}! Their latest stream was: ${soChannel.title} - ${soChannel.gameName}`
+                `Check out @${user.displayName}! ${
+                  (await apiClient.streams.getStreamByUserName(user)) !== null
+                    ? "They are currently streaming"
+                    : "Their latest stream was"
+                }: ${soChannel.title} - ${soChannel.gameName}`
               );
               break;
             default:
