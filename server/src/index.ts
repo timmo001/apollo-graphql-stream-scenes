@@ -201,7 +201,7 @@ async function main() {
       console.log("authProvider.tokenType:", authProvider.tokenType);
 
       createChatClient(authProvider, pubsub);
-      // createWebhooks(authProvider, app, pubsub);
+      createWebhooks(authProvider, app, pubsub);
     } catch (e) {
       console.error("Error:", e);
     }

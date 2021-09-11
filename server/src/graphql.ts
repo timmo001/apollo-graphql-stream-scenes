@@ -1,7 +1,9 @@
+import { ApiClient } from "@twurple/api";
+import { AuthProvider } from "@twurple/auth";
 import { format as formatWithTZ, utcToZonedTime } from "date-fns-tz";
 import { gql } from "apollo-server-express";
 import { subHours, addHours, format } from "date-fns";
-import axios from "axios";
+// import axios from "axios";
 
 const FOLLOW = "FOLLOW";
 const SUBSCRIBE = "SUBSCRIBE";
@@ -62,7 +64,9 @@ const typeDefs = gql`
   }
 `;
 
-const createResolvers = (pubsub) => {
+const createResolvers = (authProvider: AuthProvider, pubsub) => {
+  const apiClient = new ApiClient({ authProvider });
+
   return {
     Query: {
       streams: async (_, { limit = 5 }) => {
@@ -104,30 +108,12 @@ const createResolvers = (pubsub) => {
         //   console.error(error);
         //   return null;
         // }
+        return null;
       },
       channel: async () => {
         console.log("Get Token..");
 
         try {
-          const { status, data: authData } = await axios.post(
-            "https://id.twitch.tv/oauth2/token",
-            {
-              params: {
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
-                grant_type: "client_credentials",
-                scope: "viewing_activity_read",
-              },
-            }
-          );
-
-          if (status !== 200) {
-            console.error("Authentication error:", status, authData);
-            return;
-          }
-
-          console.log("authData:", authData);
-
           // const { data: userData } = await axios.get(
           //   `https://api.twitch.tv/helix/users?login=${process.env.CHANNEL}`,
           //   {
@@ -137,6 +123,11 @@ const createResolvers = (pubsub) => {
           //     },
           //   }
           // );
+
+          const channel = await apiClient.channels.getChannelInfo(
+            process.env.CHANNEL
+          );
+          const user = await apiClient.users.getUserByName(process.env.CHANNEL);
 
           // const { data: channelData } = await axios.get(
           //   `https://api.twitch.tv/v5/channels/${userData.data[0].id}`,
@@ -148,14 +139,14 @@ const createResolvers = (pubsub) => {
           //   }
           // );
 
-          // return {
-          //   id: parseInt(channelData._id, 10),
-          //   title: channelData.status,
-          //   views: channelData.views,
-          //   followers: channelData.followers,
-          // };
-        } catch {
-          console.error("Error getting channel data");
+          return {
+            id: parseInt(channel.id, 10),
+            title: channel.title,
+            views: user.views,
+            followers: await user.getFollows(),
+          };
+        } catch (e) {
+          console.error("Error getting channel data:", e);
         }
       },
     },
@@ -213,9 +204,9 @@ const createResolvers = (pubsub) => {
         //   console.error(error);
         //   return null;
         // }
+        return null;
       },
       currentViewers: async ({ id }) => {
-        const stream = undefined;
         // const {
         //   data: { stream },
         // } = await axios.get(`https://api.twitch.tv/v5/streams/${id}`, {
@@ -224,6 +215,8 @@ const createResolvers = (pubsub) => {
         //     "Client-ID": process.env.CLIENT_ID,
         //   },
         // });
+
+        const stream = await apiClient.streams.getStreamByUserId(id);
 
         return stream ? stream.viewers : 0;
       },
