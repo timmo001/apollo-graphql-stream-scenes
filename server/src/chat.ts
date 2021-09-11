@@ -27,14 +27,6 @@ const COMMANDS_MAP = {
   "!website": "https://timmo.dev",
   "!woosh": "playSound",
   "!zap": "playSound",
-  // "--help": "Here are all the available commands: !uses, !schedule, !coc, !discord, !docs, !lp-project, !music, !playlist (alias)",
-  // "!coc": "https://www.apollographql.com/docs/community/code-of-conduct/",
-  // "!commands": "Here are all the available commands: !uses, !schedule, !coc, !discord, !docs, !lp-project, !music, !playlist (alias)",
-  // "!discord": "https://go.apollo.dev/discord",
-  // "!docs": "https://apollo.dev",
-  // "!music": "https://open.spotify.com/playlist/4kAqBBEZQsBIXMIJl6u8tO?si=yTuT421KRbu05kcLIMWYWg",
-  // "!playlist": "https://open.spotify.com/playlist/4kAqBBEZQsBIXMIJl6u8tO?si=yTuT421KRbu05kcLIMWYWg",
-  // "!schedule": "https://go.apollo.dev/events-calendar",
 };
 
 const memeMap = {
@@ -51,7 +43,6 @@ const buildResponse = (user: string, message: string, msg: PrivateMessage) => {
   let newMessage = "";
 
   for (const messagePart of msg.parseEmotes()) {
-    // console.log(messagePart);
     if (messagePart.type === "emote") {
       const url = messagePart.displayInfo.getUrl({
         animationSettings: "default",
@@ -61,11 +52,9 @@ const buildResponse = (user: string, message: string, msg: PrivateMessage) => {
       emotes.push(url);
       newMessage += `<img src="${url}" alt="${messagePart.name}" style="margin: 0 2px;" />`;
     } else if (messagePart.type === "cheer")
-      newMessage += `<img src="${messagePart.displayInfo.url}" alt="${messagePart.name}" style="margin-left: "4px"; margin-right: "4px";" />`;
+      newMessage += `<img src="${messagePart.displayInfo.url}" alt="${messagePart.name}" style="margin: 0 2px;" />`;
     else newMessage += messagePart.text;
   }
-  // const emotes = .map((message: ParsedMessagePart) => {
-  // });
 
   return {
     emotes,
@@ -83,9 +72,6 @@ async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
     });
     await chatClient.connect();
 
-    // client.on("raided", (_, username, viewers) => {
-    //   pubsub.publish(RAID, { raid: { username, viewers } });
-    // });
     chatClient.onRaid(
       (
         _channel: string,
@@ -108,7 +94,6 @@ async function createChatClient(authProvider: AuthProvider, pubsub: PubSub) {
       ) => {
         // console.log("New message:", { channel, user, message, msg });
         const response = buildResponse(user, message, msg);
-        // await chatClient.say(channel, message);
         pubsub.publish(CHAT_MESSAGE, { chat: response });
 
         if (message.match(/^(!|--)/)) {

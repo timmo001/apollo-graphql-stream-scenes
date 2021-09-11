@@ -80,9 +80,6 @@ export class GraphQL {
   async createResolvers(): Promise<IResolvers | Array<IResolvers>> {
     return {
       Query: {
-        // streams: async (_: any, { limit = 5 }: any) => {
-        //   return null;
-        // },
         channel: async () => {
           try {
             console.log("Get channel data");

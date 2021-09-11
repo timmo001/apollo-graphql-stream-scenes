@@ -11,7 +11,7 @@ import express from "express";
 import queryString from "query-string";
 
 import { createChatClient } from "./chat";
-import { createWebhooks } from "./webhooks";
+// import { createWebhooks } from "./webhooks";
 import { typeDefs, GraphQL } from "./graphql";
 import axios from "axios";
 import open from "open";
@@ -33,8 +33,6 @@ async function main() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // uploads: false,
-    // playground: true,
     introspection: true,
   });
 
